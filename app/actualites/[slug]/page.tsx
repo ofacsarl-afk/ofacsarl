@@ -1,4 +1,5 @@
 import "@/app/ofac.css";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
@@ -40,8 +41,9 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
           </p>
         )}
         {post.cover_url && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={post.cover_url} alt={post.title_fr} style={{ width: "100%", borderRadius: 16, marginBottom: 28 }} />
+          <Image src={post.cover_url} alt={post.title_fr} width={1200} height={675} priority
+            sizes="(max-width: 820px) 100vw, 820px"
+            style={{ width: "100%", height: "auto", borderRadius: 16, marginBottom: 28 }} />
         )}
         <div style={{ color: "var(--light-gray)", fontSize: 18, lineHeight: 1.9, whiteSpace: "pre-wrap" }}>
           <div data-fr>{post.body_fr}</div>

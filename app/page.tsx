@@ -1,4 +1,5 @@
 import "./ofac.css";
+import Image from "next/image";
 import SiteEffects from "@/app/components/SiteEffects";
 import SiteNav from "@/app/components/SiteNav";
 import ContactForm from "@/app/components/ContactForm";
@@ -117,8 +118,8 @@ export default async function Home() {
           </div>
           <div className="about-visual reveal-right">
             <div className="about-tag">OFAC</div>
-            <img className="about-img-main" src={images.about_main} alt="OFAC Recyclage — équipe terrain" loading="lazy" />
-            <img className="about-img-overlay" src={images.about_overlay} alt="Pavés écologiques OFAC" loading="lazy" />
+            <Image className="about-img-main" src={images.about_main} alt="OFAC Recyclage — équipe terrain" width={720} height={960} sizes="(max-width: 768px) 100vw, 40vw" />
+            <Image className="about-img-overlay" src={images.about_overlay} alt="Pavés écologiques OFAC" width={480} height={360} sizes="(max-width: 768px) 50vw, 22vw" />
           </div>
         </div>
       </section>
@@ -127,7 +128,7 @@ export default async function Home() {
       <section id="founder">
         <div className="about-grid">
           <div className="about-visual">
-            <img src={images.founder} className="about-img-main" alt="Joëlle Baraka — Fondatrice OFAC" loading="lazy" />
+            <Image src={images.founder} className="about-img-main" alt="Joëlle Baraka — Fondatrice OFAC" width={720} height={960} sizes="(max-width: 768px) 100vw, 40vw" />
           </div>
           <div className="about-text reveal-right">
             <div className="section-label">Leadership</div>
@@ -214,7 +215,7 @@ export default async function Home() {
               { img: "sensibilisation1.jpg", num: "06", tagFr: "Formation", tagEn: "Training", icon: "🎓", tFr: "Formation Économie Verte", tEn: "Green Economy Training", pFr: "Semaine 1 (en ligne) : théorie sur la gestion de projets, le recyclage et l'entrepreneuriat vert. Semaine 2 (en présentiel) : pratique — transformation des déchets en pavés. À la fin : un projet écrit + un certificat.", pEn: "Week 1 (online): theory on project management, recycling & green entrepreneurship. Week 2 (in-person): hands-on transforming plastic waste into paving stones. Graduates receive a written project + a certificate." },
             ].map((a, i) => (
               <div className="activity-card reveal" key={a.num} style={{ transitionDelay: `${i * 0.1}s` }}>
-                <img src={`/images/${a.img}`} alt={a.tFr} loading="lazy" />
+                <Image src={`/images/${a.img}`} alt={a.tFr} width={640} height={480} sizes="(max-width: 768px) 100vw, 33vw" />
                 <div className="activity-overlay">
                   <span className="activity-num">{a.num}</span>
                   <div className="activity-tag" data-fr>{a.tagFr}</div>
@@ -279,7 +280,7 @@ export default async function Home() {
           <div className="gallery-grid">
             {gallery.map((g, i) => (
               <div className="gallery-item reveal" key={i} style={{ transitionDelay: `${i * 0.1}s` }}>
-                <img src={g.image_url} alt={g.caption_fr || "OFAC"} loading="lazy" />
+                <Image src={g.image_url} alt={g.caption_fr || "OFAC"} width={800} height={600} sizes="(max-width: 768px) 100vw, 33vw" />
                 <div className="gallery-caption" data-fr>{g.caption_fr}</div>
                 <div className="gallery-caption" data-en>{g.caption_en}</div>
               </div>
@@ -301,7 +302,7 @@ export default async function Home() {
             <div className="activities-grid">
               {posts.slice(0, 6).map((p) => (
                 <a className="activity-card reveal" href={`/actualites/${p.slug}`} key={p.id} style={{ display: "block" }}>
-                  {p.cover_url ? <img src={p.cover_url} alt={p.title_fr} loading="lazy" /> : null}
+                  {p.cover_url ? <Image src={p.cover_url} alt={p.title_fr} width={640} height={400} sizes="(max-width: 768px) 100vw, 33vw" /> : null}
                   <div className="activity-overlay" style={{ position: "static", opacity: 1, transform: "none", padding: 24 }}>
                     <h3 data-fr>{p.title_fr}</h3><h3 data-en>{p.title_en || p.title_fr}</h3>
                     <p data-fr>{p.excerpt_fr}</p><p data-en>{p.excerpt_en || p.excerpt_fr}</p>
@@ -342,7 +343,7 @@ export default async function Home() {
             {partners.map((p, i) => (
               <div className="partner-logo reveal" key={i} style={{ transitionDelay: `${i * 0.05}s` }}>
                 {p.logo_url ? (
-                  <img src={p.logo_url} alt={p.name} className="partner-img" loading="lazy" />
+                  <Image src={p.logo_url} alt={p.name} className="partner-img" width={160} height={90} sizes="120px" />
                 ) : (
                   <div className="partner-ph-icon">{p.name.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase()}</div>
                 )}
