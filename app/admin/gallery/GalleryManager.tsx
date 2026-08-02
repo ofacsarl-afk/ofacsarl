@@ -84,7 +84,7 @@ export default function GalleryManager({ items }: { items: GalleryItem[] }) {
         <div className="rounded-2xl border border-dashed border-zinc-300 bg-white p-6 text-center">
           <p className="text-zinc-600 mb-1">La galerie affiche actuellement les <b>photos par défaut</b> du site.</p>
           <p className="text-zinc-500 text-sm mb-4">Importez-les dans la base pour pouvoir les modifier, réordonner ou supprimer une par une.</p>
-          <button onClick={() => start(() => seedDefaultGallery())} disabled={pending}
+          <button onClick={() => start(async () => { await seedDefaultGallery(); })} disabled={pending}
             className="px-4 py-2 rounded-lg bg-[#c1121f] text-white hover:bg-[#9a0e18] disabled:opacity-60">
             {pending ? "Import..." : "Importer les photos existantes"}
           </button>
