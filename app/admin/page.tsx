@@ -19,30 +19,26 @@ async function count(table: string, filter?: (q: any) => any) {
 
 async function recentMessages() {
   const sb = await getServerSupabase();
-  if (!sb) return [] as { id: string; name: string; created_at: string }[];
+  if (!sb) return [] as { id: string; name: string; type: string | null; created_at: string }[];
   try {
     const { data } = await sb
       .from("messages")
-      .select("id,name,created_at")
+      .select("id,name,type,created_at")
       .eq("is_archived", false)
       .order("created_at", { ascending: false })
-      .limit(5);
+      .limit(6);
     return data || [];
   } catch {
     return [];
   }
 }
 
-function Metabox({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <section className="bg-white border border-[#c3c4c7] rounded-[3px]">
-      <div className="px-3 py-2.5 border-b border-[#c3c4c7]">
-        <h2 className="text-[14px] font-semibold text-[#1d2327]">{title}</h2>
-      </div>
-      <div className="p-3">{children}</div>
-    </section>
-  );
-}
+const INDICATORS = [
+  { label: "Collecte plastique", value: 87 },
+  { label: "Production de pavés", value: 74 },
+  { label: "Zones sensibilisées", value: 91 },
+  { label: "Création d'emplois", value: 62 },
+];
 
 export default async function AdminHome() {
   const [unread, totalMsg, posts, gallery, partners, recents] = await Promise.all([
@@ -54,86 +50,104 @@ export default async function AdminHome() {
     recentMessages(),
   ]);
 
-  const glance: { icon: IconName; label: string; value: number; href: string }[] = [
-    { icon: "inbox", label: "Messages", value: totalMsg, href: "/admin/messages" },
-    { icon: "news", label: "Actualités", value: posts, href: "/admin/posts" },
-    { icon: "image", label: "Photos", value: gallery, href: "/admin/gallery" },
-    { icon: "users", label: "Partenaires", value: partners, href: "/admin/partners" },
+  const cards: { label: string; value: number; sub: string; icon: IconName; href: string }[] = [
+    { label: "Messages", value: totalMsg, sub: unread > 0 ? `${unread} non lu(s)` : "à jour", icon: "inbox", href: "/admin/messages" },
+    { label: "Actualités", value: posts, sub: "articles publiés", icon: "news", href: "/admin/posts" },
+    { label: "Photos galerie", value: gallery, sub: "images en ligne", icon: "image", href: "/admin/gallery" },
+    { label: "Partenaires", value: partners, sub: "organisations", icon: "users", href: "/admin/partners" },
   ];
 
   return (
     <div>
-      <h1 className="text-[23px] font-normal text-[#1d2327] mb-4">Tableau de bord</h1>
+      {/* Fil d'Ariane */}
+      <nav className="text-sm text-zinc-500 mb-5">
+        <span>Accueil</span> <span className="mx-1.5 text-zinc-300">/</span>{" "}
+        <span className="text-zinc-700 font-medium">Tableau de bord</span>
+      </nav>
 
-      {/* ===== Panneau de bienvenue ===== */}
-      <div className="relative bg-white border border-[#c3c4c7] rounded-[3px] p-5 md:p-7 mb-5 overflow-hidden">
-        <span className="absolute left-0 top-0 h-full w-1 bg-[#c1121f]" />
-        <h2 className="text-[21px] font-normal text-[#1d2327]">Bienvenue sur l&apos;espace OFAC !</h2>
-        <p className="text-[#50575e] mt-1 mb-5 text-[14px]">Gérez le contenu de votre site sans écrire de code.</p>
-        <div className="grid md:grid-cols-3 gap-6 text-[14px]">
-          <div>
-            <h3 className="text-[16px] font-semibold mb-3">Démarrer</h3>
-            <Link href="/" target="_blank" className="inline-block px-4 py-2 rounded-[3px] bg-[#c1121f] text-white font-medium hover:bg-[#9a0e18]">
-              Voir le site en ligne
-            </Link>
-            <p className="text-[#50575e] mt-3">ou <Link href="/admin/posts" className="text-[#c1121f] hover:underline">publier une actualité</Link></p>
-          </div>
-          <div>
-            <h3 className="text-[16px] font-semibold mb-3">Étapes suivantes</h3>
-            <ul className="space-y-2">
-              <li className="flex items-center gap-2"><Icon name="news" size={16} className="text-[#c1121f]" /><Link href="/admin/posts" className="text-[#c1121f] hover:underline">Écrire un article</Link></li>
-              <li className="flex items-center gap-2"><Icon name="image" size={16} className="text-[#c1121f]" /><Link href="/admin/gallery" className="text-[#c1121f] hover:underline">Ajouter des photos</Link></li>
-              <li className="flex items-center gap-2"><Icon name="users" size={16} className="text-[#c1121f]" /><Link href="/admin/partners" className="text-[#c1121f] hover:underline">Ajouter un partenaire</Link></li>
-            </ul>
-          </div>
-          <div>
-            <h3 className="text-[16px] font-semibold mb-3">Plus d&apos;actions</h3>
-            <ul className="space-y-2">
-              <li className="flex items-center gap-2"><Icon name="inbox" size={16} className="text-[#50575e]" /><Link href="/admin/messages" className="text-[#c1121f] hover:underline">Consulter les messages</Link></li>
-              <li className="flex items-center gap-2"><Icon name="settings" size={16} className="text-[#50575e]" /><Link href="/admin/settings" className="text-[#c1121f] hover:underline">Modifier images &amp; chiffres</Link></li>
-            </ul>
-          </div>
-        </div>
+      {/* Cartes de statistiques */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 md:gap-5">
+        {cards.map((c) => (
+          <Link key={c.label} href={c.href} className="bg-white rounded-xl shadow-sm border border-zinc-100 p-5 flex items-center justify-between gap-3 hover:shadow-md transition">
+            <div className="min-w-0">
+              <div className="text-sm text-zinc-500">{c.label}</div>
+              <div className="text-3xl font-extrabold text-zinc-900 mt-1 leading-none">{c.value}</div>
+              <div className="text-xs text-zinc-400 mt-1.5 truncate">{c.sub}</div>
+            </div>
+            <span className="inline-flex h-14 w-14 items-center justify-center rounded-full shrink-0" style={{ background: "#fdecef", color: "#c1121f" }}>
+              <Icon name={c.icon} size={24} />
+            </span>
+          </Link>
+        ))}
       </div>
 
-      {/* ===== Metaboxes ===== */}
-      <div className="grid md:grid-cols-2 gap-5">
-        <Metabox title="En un coup d'œil">
-          {unread > 0 && (
-            <Link href="/admin/messages" className="flex items-center gap-2 mb-3 text-[14px] font-medium text-[#c1121f] hover:underline">
-              <span className="inline-flex items-center justify-center min-w-5 h-5 px-1.5 rounded-full bg-[#c1121f] text-white text-[11px] font-bold">{unread}</span>
-              message(s) non lu(s)
-            </Link>
-          )}
-          <ul className="grid grid-cols-2 gap-y-2 text-[14px]">
-            {glance.map((g) => (
-              <li key={g.label}>
-                <Link href={g.href} className="flex items-center gap-2 text-[#2c3338] hover:text-[#c1121f]">
-                  <Icon name={g.icon} size={16} className="text-[#787c82]" />
-                  <span className="font-semibold">{g.value}</span> {g.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </Metabox>
+      {/* Panneaux */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-5 mt-5">
+        {/* Activité récente */}
+        <section className="bg-white rounded-xl shadow-sm border border-zinc-100">
+          <div className="px-5 py-4 border-b border-zinc-100 flex items-center justify-between">
+            <h2 className="font-bold text-zinc-900">Messages récents</h2>
+            <Link href="/admin/messages" className="text-sm font-medium hover:underline" style={{ color: "#c1121f" }}>Tout voir</Link>
+          </div>
+          <div className="p-2">
+            {recents.length === 0 ? (
+              <p className="text-sm text-zinc-500 p-4">Aucun message pour le moment.</p>
+            ) : (
+              <ul>
+                {recents.map((m) => (
+                  <li key={m.id} className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-zinc-50">
+                    <span className="inline-flex h-9 w-9 items-center justify-center rounded-full text-white text-xs font-bold shrink-0" style={{ background: "#0e1a33" }}>
+                      {m.name.slice(0, 2).toUpperCase()}
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <div className="text-sm font-medium text-zinc-800 truncate">{m.name}</div>
+                      {m.type && <div className="text-xs text-zinc-400">{m.type}</div>}
+                    </div>
+                    <span className="text-xs text-zinc-400 whitespace-nowrap">
+                      {new Date(m.created_at).toLocaleDateString("fr-FR", { day: "2-digit", month: "short" })}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </section>
 
-        <Metabox title="Activité récente">
-          {recents.length === 0 ? (
-            <p className="text-[14px] text-[#50575e]">Aucun message récent.</p>
-          ) : (
-            <ul className="divide-y divide-[#f0f0f1] text-[14px]">
-              {recents.map((m) => (
-                <li key={m.id} className="py-2 flex items-center justify-between gap-3">
-                  <span className="text-[#1d2327]">{m.name}</span>
-                  <span className="text-[#787c82] text-[12px] whitespace-nowrap">
-                    {new Date(m.created_at).toLocaleDateString("fr-FR", { day: "2-digit", month: "short" })}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          )}
-          <Link href="/admin/messages" className="inline-block mt-3 text-[13px] text-[#c1121f] hover:underline">Voir tous les messages →</Link>
-        </Metabox>
+        {/* Indicateurs d'impact */}
+        <section className="bg-white rounded-xl shadow-sm border border-zinc-100">
+          <div className="px-5 py-4 border-b border-zinc-100">
+            <h2 className="font-bold text-zinc-900">Indicateurs d&apos;impact</h2>
+          </div>
+          <div className="p-5 space-y-4">
+            {INDICATORS.map((ind) => (
+              <div key={ind.label}>
+                <div className="flex items-center justify-between text-sm mb-1.5">
+                  <span className="text-zinc-600">{ind.label}</span>
+                  <span className="font-semibold text-zinc-800">{ind.value}%</span>
+                </div>
+                <div className="h-2.5 rounded-full bg-zinc-100 overflow-hidden">
+                  <div className="h-full rounded-full" style={{ width: `${ind.value}%`, background: "#c1121f" }} />
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      </div>
+
+      {/* Actions rapides */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-5 mt-5">
+        {[
+          { label: "Publier une actualité", href: "/admin/posts", icon: "news" as IconName },
+          { label: "Ajouter des photos", href: "/admin/gallery", icon: "image" as IconName },
+          { label: "Images & chiffres", href: "/admin/settings", icon: "settings" as IconName },
+        ].map((a) => (
+          <Link key={a.href} href={a.href} className="bg-white rounded-xl shadow-sm border border-zinc-100 p-4 flex items-center gap-3 hover:shadow-md transition">
+            <span className="inline-flex h-10 w-10 items-center justify-center rounded-lg text-white shrink-0" style={{ background: "#c1121f" }}>
+              <Icon name={a.icon} size={18} />
+            </span>
+            <span className="font-medium text-zinc-800">{a.label}</span>
+          </Link>
+        ))}
       </div>
     </div>
   );

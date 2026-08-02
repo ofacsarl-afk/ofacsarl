@@ -16,6 +16,8 @@ const NAV: { href: string; label: string; icon: IconName }[] = [
   { href: "/admin/settings", label: "Images & chiffres", icon: "settings" },
 ];
 
+const NAVY = "#0e1a33";
+
 export default function AdminShell({ email, children }: { email: string; children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
@@ -24,6 +26,7 @@ export default function AdminShell({ email, children }: { email: string; childre
   const name = email.split("@")[0] || "admin";
   const initials = name.slice(0, 2).toUpperCase();
   const isActive = (href: string) => (href === "/admin" ? pathname === "/admin" : pathname.startsWith(href));
+  const title = NAV.find((n) => isActive(n.href))?.label || "Tableau de bord";
 
   async function signOut() {
     const sb = getBrowserSupabase();
@@ -32,64 +35,93 @@ export default function AdminShell({ email, children }: { email: string; childre
     router.refresh();
   }
 
+  const SidebarInner = (
+    <div className="flex h-full flex-col text-[#c7d0e0]" style={{ background: NAVY }}>
+      {/* Logo */}
+      <div className="flex items-center gap-3 px-5 h-16 border-b border-white/5">
+        <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-white p-1 shrink-0">
+          <Image src="/images/logo_ofac.jpg" alt="OFAC" width={30} height={30} className="object-contain rounded" />
+        </span>
+        <div className="leading-tight min-w-0">
+          <div className="font-extrabold text-white tracking-tight">OFAC</div>
+          <div className="text-[10px] uppercase tracking-[0.18em] text-[#7d8aa5]">Administration</div>
+        </div>
+      </div>
+
+      {/* Navigation */}
+      <nav className="flex-1 overflow-y-auto p-3 space-y-1">
+        {NAV.map((n) => {
+          const active = isActive(n.href);
+          return (
+            <Link
+              key={n.href}
+              href={n.href}
+              onClick={() => setOpen(false)}
+              className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition ${
+                active ? "text-white shadow" : "text-[#a9b4cc] hover:bg-white/5 hover:text-white"
+              }`}
+              style={active ? { background: "#c1121f" } : undefined}
+            >
+              <Icon name={n.icon} size={18} />
+              <span className="truncate">{n.label}</span>
+            </Link>
+          );
+        })}
+
+        <div className="my-3 border-t border-white/5" />
+        <Link href="/" target="_blank" onClick={() => setOpen(false)} className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-[#a9b4cc] hover:bg-white/5 hover:text-white transition">
+          <Icon name="image" size={18} /> <span className="truncate">Voir le site</span>
+        </Link>
+      </nav>
+
+      <div className="p-3 border-t border-white/5">
+        <button onClick={signOut} className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-[#a9b4cc] hover:bg-white/5 hover:text-white transition">
+          <Icon name="logout" size={18} /> Se déconnecter
+        </button>
+      </div>
+    </div>
+  );
+
   return (
-    <div className="min-h-screen bg-[#f0f0f1] text-[#1d2327] [font-family:-apple-system,BlinkMacSystemFont,'Segoe_UI',Roboto,Helvetica,Arial,sans-serif]">
-      {/* ===== Barre d'administration (haut) ===== */}
-      <header className="fixed top-0 inset-x-0 z-50 h-10 bg-[#1d2327] text-[#f0f0f1] flex items-center justify-between pl-2 pr-3 text-[13px]">
-        <div className="flex items-center gap-1">
-          <button className="md:hidden px-2 py-1 text-[#c3c4c7] hover:text-white" onClick={() => setOpen(!open)} aria-label="Menu">
-            <Icon name="menu" size={20} />
-          </button>
-          <Link href="/" target="_blank" className="flex items-center gap-2 px-2 py-1.5 hover:text-white">
-            <span className="inline-flex h-6 w-6 items-center justify-center rounded bg-white">
-              <Image src="/images/logo_ofac.jpg" alt="OFAC" width={22} height={22} className="object-contain rounded-sm" />
-            </span>
-            <span className="font-semibold">OFAC</span>
-            <span className="text-[#a7aaad] hidden sm:inline">— voir le site</span>
-          </Link>
+    <div className="flex min-h-screen bg-[#f4f6fb] text-[#1f2a44] overflow-x-hidden [font-family:-apple-system,BlinkMacSystemFont,'Segoe_UI',Roboto,Helvetica,Arial,sans-serif]">
+      {/* Sidebar desktop (dans le flux → aucun décalage) */}
+      <aside className="hidden lg:block w-64 shrink-0 sticky top-0 h-screen">{SidebarInner}</aside>
+
+      {/* Drawer mobile */}
+      {open && (
+        <div className="lg:hidden fixed inset-0 z-50 flex">
+          <div className="w-64 max-w-[80%] h-full shadow-2xl">{SidebarInner}</div>
+          <div className="flex-1 bg-black/50" onClick={() => setOpen(false)} />
         </div>
-        <div className="flex items-center gap-2">
-          <span className="text-[#c3c4c7] hidden sm:inline">Bonjour, <b className="text-white font-medium">{name}</b></span>
-          <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[#c1121f] text-white text-[11px] font-bold">{initials}</span>
-          <button onClick={signOut} className="ml-1 text-[#c3c4c7] hover:text-white flex items-center gap-1">
-            <Icon name="logout" size={15} /> <span className="hidden sm:inline">Déconnexion</span>
+      )}
+
+      {/* Colonne principale */}
+      <div className="flex-1 min-w-0 flex flex-col">
+        {/* Barre supérieure */}
+        <header className="sticky top-0 z-30 bg-white border-b border-zinc-200 h-16 flex items-center gap-3 px-4 md:px-6">
+          <button className="lg:hidden text-zinc-600 hover:text-zinc-900 -ml-1 p-1" onClick={() => setOpen(true)} aria-label="Menu">
+            <Icon name="menu" size={24} />
           </button>
-        </div>
-      </header>
+          <h1 className="text-lg font-bold text-zinc-900 truncate">{title}</h1>
 
-      <div className="pt-10 flex">
-        {/* ===== Menu latéral ===== */}
-        <aside
-          className={`fixed md:sticky z-40 top-10 md:self-start h-[calc(100vh-2.5rem)] w-40 shrink-0 bg-[#1d2327] transition-transform ${
-            open ? "translate-x-0" : "-translate-x-full md:translate-x-0"
-          }`}
-        >
-          <nav className="py-1 text-[14px]">
-            {NAV.map((n) => {
-              const active = isActive(n.href);
-              return (
-                <Link
-                  key={n.href}
-                  href={n.href}
-                  onClick={() => setOpen(false)}
-                  className={`flex items-center gap-2.5 px-3 py-2.5 transition ${
-                    active
-                      ? "bg-[#c1121f] text-white font-medium"
-                      : "text-[#c3c4c7] hover:bg-[#2c3338] hover:text-white"
-                  }`}
-                >
-                  <Icon name={n.icon} size={18} className={active ? "text-white" : "text-[#a7aaad]"} />
-                  {n.label}
-                </Link>
-              );
-            })}
-          </nav>
-        </aside>
+          <div className="ml-auto flex items-center gap-2 md:gap-3">
+            <div className="hidden md:flex items-center gap-2 bg-zinc-100 rounded-lg px-3 py-2 text-zinc-500">
+              <Icon name="search" size={16} />
+              <input placeholder="Rechercher…" className="bg-transparent outline-none text-sm text-zinc-700 w-36 lg:w-48" />
+            </div>
+            <Link href="/admin/messages" className="relative p-2 rounded-lg text-zinc-500 hover:bg-zinc-100" aria-label="Messages">
+              <Icon name="bell" size={20} />
+            </Link>
+            <div className="flex items-center gap-2 pl-1">
+              <span className="inline-flex h-9 w-9 items-center justify-center rounded-full text-white text-xs font-bold" style={{ background: "#c1121f" }}>
+                {initials}
+              </span>
+              <span className="hidden sm:block text-sm text-zinc-600 max-w-[140px] truncate">{name}</span>
+            </div>
+          </div>
+        </header>
 
-        {/* overlay mobile */}
-        {open && <div className="md:hidden fixed inset-0 top-10 z-30 bg-black/40" onClick={() => setOpen(false)} />}
-
-        {/* ===== Contenu ===== */}
+        {/* Contenu */}
         <main className="flex-1 min-w-0 p-4 md:p-6">{children}</main>
       </div>
     </div>
