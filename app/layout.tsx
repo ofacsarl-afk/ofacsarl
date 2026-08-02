@@ -15,7 +15,11 @@ export const metadata: Metadata = {
     "Afrique", "RDC", "Bukavu", "plastic recycling", "eco-paving",
   ],
   authors: [{ name: "ONCE FOR ALL COMPANY SARL" }],
-  icons: { icon: "/images/logo_ofac.jpg", apple: "/images/logo_ofac.jpg" },
+  // Favicon SVG net + apple touch icon = logo.
+  icons: {
+    icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
+    apple: "/images/logo_ofac.jpg",
+  },
   alternates: { canonical: "/" },
   openGraph: {
     type: "website",
