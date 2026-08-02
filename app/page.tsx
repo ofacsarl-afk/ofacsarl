@@ -458,6 +458,10 @@ export default async function Home() {
           <span>© 2026 OFAC — Once For All Company. <span data-fr>Tous droits réservés.</span><span data-en>All rights reserved.</span></span>
           <span data-fr>Conçu pour la planète</span>
           <span data-en>Made for the planet</span>
+          <a href="/admin" style={{ opacity: 0.65 }}>
+            <i className="fa-solid fa-lock" style={{ marginRight: 6, fontSize: 12 }} />
+            <span data-fr>Administration</span><span data-en>Admin</span>
+          </a>
         </div>
       </footer>
 
