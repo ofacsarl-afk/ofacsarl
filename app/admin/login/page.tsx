@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { getBrowserSupabase } from "@/lib/supabase/client";
 import Icon from "../Icons";
@@ -20,7 +19,7 @@ export default function LoginPage() {
     setLoading(true);
     const sb = getBrowserSupabase();
     if (!sb) {
-      setError("Supabase n'est pas configuré (variables d'environnement manquantes).");
+      setError("Supabase n'est pas configuré.");
       setLoading(false);
       return;
     }
@@ -35,45 +34,58 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#0d0d0d] p-4 relative overflow-hidden">
-      {/* halo de marque */}
-      <div className="pointer-events-none absolute -top-40 -right-40 h-96 w-96 rounded-full opacity-25 blur-3xl" style={{ background: "#c1121f" }} />
-      <div className="pointer-events-none absolute -bottom-40 -left-40 h-96 w-96 rounded-full opacity-20 blur-3xl" style={{ background: "#f7b500" }} />
+    <div
+      className="min-h-screen w-full flex items-center justify-center p-4 relative overflow-hidden"
+      style={{
+        background:
+          "radial-gradient(60% 60% at 15% 20%, #e9a17c 0%, transparent 60%)," +
+          "radial-gradient(55% 55% at 85% 15%, #2a9d8f 0%, transparent 55%)," +
+          "radial-gradient(65% 65% at 80% 85%, #264653 0%, transparent 60%)," +
+          "radial-gradient(60% 60% at 20% 90%, #1d3557 0%, transparent 60%)," +
+          "linear-gradient(135deg, #3a7d7b, #21455c)",
+      }}
+    >
+      {/* voile de flou coloré */}
+      <div className="absolute inset-0 backdrop-blur-2xl bg-black/10" />
 
-      <form onSubmit={onSubmit} className="w-full max-w-sm relative">
-        {/* Logo */}
-        <div className="flex flex-col items-center mb-6">
-          <span className="inline-flex h-20 w-20 items-center justify-center rounded-2xl bg-white p-2 shadow-lg">
-            <Image src="/images/logo_ofac.jpg" alt="OFAC" width={72} height={72} className="object-contain rounded-xl" priority />
+      <form onSubmit={onSubmit} className="relative w-full max-w-[380px]">
+        {/* Pastille rouge avec cadenas */}
+        <div className="flex justify-center">
+          <span className="relative z-10 -mb-8 inline-flex h-16 w-16 items-center justify-center rounded-full bg-[#e01e37] shadow-lg ring-4 ring-white/20">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" />
+              <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+            </svg>
           </span>
-          <h1 className="mt-4 text-2xl font-extrabold tracking-tight text-white">OFAC Admin</h1>
-          <p className="text-sm text-zinc-400 mt-1">Espace d&apos;administration</p>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-2xl p-7">
-          {/* filet de marque */}
-          <div className="h-1 -mt-7 -mx-7 mb-6 rounded-t-2xl" style={{ background: "linear-gradient(90deg,#c1121f,#f7b500 60%,#1a1a1a)" }} />
+        {/* Carte givrée */}
+        <div className="rounded-2xl bg-white/15 backdrop-blur-xl border border-white/25 shadow-2xl pt-12 pb-7 px-6">
+          <div className="text-center mb-5">
+            <div className="text-white font-bold tracking-wide text-lg drop-shadow">OFAC ADMIN</div>
+            <div className="text-white/70 text-xs mt-0.5">Espace d&apos;administration</div>
+          </div>
 
           {error && (
-            <div className="mb-4 text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg px-3 py-2">{error}</div>
+            <div className="mb-4 text-sm text-white bg-red-600/80 rounded-lg px-3 py-2 text-center">{error}</div>
           )}
 
-          <label className="block text-sm font-medium text-zinc-700 mb-1">Email</label>
           <input
-            type="email" required value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email"
-            className="w-full mb-4 px-3 py-2.5 rounded-lg border border-zinc-300 focus:outline-none focus:ring-2 focus:ring-[#c1121f]/50 focus:border-[#c1121f]"
+            type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
+            placeholder="email" autoComplete="email"
+            className="w-full mb-3 px-4 py-3 rounded-lg bg-white text-[#1d2327] placeholder-zinc-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#e01e37]"
           />
 
-          <label className="block text-sm font-medium text-zinc-700 mb-1">Mot de passe</label>
-          <div className="relative mb-6">
+          <div className="relative mb-5">
             <input
-              type={show ? "text" : "password"} required value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="current-password"
-              className="w-full px-3 py-2.5 pr-11 rounded-lg border border-zinc-300 focus:outline-none focus:ring-2 focus:ring-[#c1121f]/50 focus:border-[#c1121f]"
+              type={show ? "text" : "password"} required value={password} onChange={(e) => setPassword(e.target.value)}
+              placeholder="mot de passe" autoComplete="current-password"
+              className="w-full px-4 py-3 pr-11 rounded-lg bg-white text-[#1d2327] placeholder-zinc-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#e01e37]"
             />
             <button
               type="button" onClick={() => setShow((s) => !s)}
               aria-label={show ? "Masquer le mot de passe" : "Afficher le mot de passe"}
-              className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-zinc-400 hover:text-zinc-700"
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-zinc-400 hover:text-zinc-700"
             >
               <Icon name={show ? "eyeOff" : "eye"} size={20} />
             </button>
@@ -81,14 +93,18 @@ export default function LoginPage() {
 
           <button
             type="submit" disabled={loading}
-            className="w-full py-2.5 rounded-lg text-white font-semibold transition disabled:opacity-60 hover:brightness-110"
-            style={{ background: "#c1121f" }}
+            className="w-full py-3 rounded-lg bg-[#e01e37] text-white font-bold tracking-wide uppercase shadow-md transition hover:bg-[#c1121f] disabled:opacity-60"
           >
             {loading ? "Connexion..." : "Se connecter"}
           </button>
-        </div>
 
-        <p className="text-center text-xs text-zinc-500 mt-6">© 2026 OFAC — Once For All Company</p>
+          <p className="text-center text-white/80 text-[13px] mt-4">
+            Mot de passe oublié ?{" "}
+            <a href="mailto:onceforallcompanysarl@gmail.com?subject=Réinitialisation%20mot%20de%20passe%20admin%20OFAC" className="underline hover:text-white">
+              Cliquez ici
+            </a>
+          </p>
+        </div>
       </form>
     </div>
   );

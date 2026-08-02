@@ -16,12 +16,14 @@ const NAV: { href: string; label: string; icon: IconName }[] = [
   { href: "/admin/settings", label: "Images & chiffres", icon: "settings" },
 ];
 
-const RED = "#c1121f";
-
 export default function AdminShell({ email, children }: { email: string; children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const [open, setOpen] = useState(false);
+
+  const name = email.split("@")[0] || "admin";
+  const initials = name.slice(0, 2).toUpperCase();
+  const isActive = (href: string) => (href === "/admin" ? pathname === "/admin" : pathname.startsWith(href));
 
   async function signOut() {
     const sb = getBrowserSupabase();
@@ -30,95 +32,65 @@ export default function AdminShell({ email, children }: { email: string; childre
     router.refresh();
   }
 
-  const isActive = (href: string) => (href === "/admin" ? pathname === "/admin" : pathname.startsWith(href));
-
-  const Sidebar = (
-    <div className="flex h-full flex-col bg-[#0d0d0d] text-zinc-200">
-      {/* Marque */}
-      <div className="flex items-center gap-3 px-5 py-5 border-b border-white/10">
-        <span className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-white p-1">
-          <Image src="/images/logo_ofac.jpg" alt="OFAC" width={40} height={40} className="object-contain rounded-lg" />
-        </span>
-        <div className="leading-tight">
-          <div className="font-extrabold tracking-tight text-white">OFAC</div>
-          <div className="text-[11px] uppercase tracking-[0.15em] text-zinc-400">Administration</div>
-        </div>
-      </div>
-
-      {/* Navigation */}
-      <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
-        {NAV.map((n) => {
-          const active = isActive(n.href);
-          return (
-            <Link
-              key={n.href}
-              href={n.href}
-              onClick={() => setOpen(false)}
-              className={`group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition ${
-                active ? "bg-[#c1121f] text-white shadow-sm" : "text-zinc-300 hover:bg-white/5 hover:text-white"
-              }`}
-            >
-              <Icon name={n.icon} size={19} className={active ? "text-white" : "text-zinc-400 group-hover:text-white"} />
-              {n.label}
-            </Link>
-          );
-        })}
-      </nav>
-
-      {/* Utilisateur + déconnexion */}
-      <div className="p-3 border-t border-white/10">
-        <div className="px-2 pb-2 text-xs text-zinc-400 truncate" title={email}>
-          {email}
-        </div>
-        <button
-          onClick={signOut}
-          className="flex w-full items-center justify-center gap-2 rounded-xl border border-white/15 px-3 py-2 text-sm text-zinc-200 hover:bg-white/5 transition"
-        >
-          <Icon name="logout" size={17} />
-          Se déconnecter
-        </button>
-      </div>
-    </div>
-  );
-
   return (
-    <div className="min-h-screen bg-[#f5f5f4] text-zinc-900">
-      {/* Barre supérieure mobile */}
-      <header className="md:hidden sticky top-0 z-30 flex items-center justify-between bg-[#0d0d0d] px-4 py-3 text-white">
-        <div className="flex items-center gap-2">
-          <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-white p-0.5">
-            <Image src="/images/logo_ofac.jpg" alt="OFAC" width={28} height={28} className="object-contain rounded-md" />
-          </span>
-          <span className="font-bold">OFAC Admin</span>
+    <div className="min-h-screen bg-[#f0f0f1] text-[#1d2327] [font-family:-apple-system,BlinkMacSystemFont,'Segoe_UI',Roboto,Helvetica,Arial,sans-serif]">
+      {/* ===== Barre d'administration (haut) ===== */}
+      <header className="fixed top-0 inset-x-0 z-50 h-10 bg-[#1d2327] text-[#f0f0f1] flex items-center justify-between pl-2 pr-3 text-[13px]">
+        <div className="flex items-center gap-1">
+          <button className="md:hidden px-2 py-1 text-[#c3c4c7] hover:text-white" onClick={() => setOpen(!open)} aria-label="Menu">
+            <Icon name="menu" size={20} />
+          </button>
+          <Link href="/" target="_blank" className="flex items-center gap-2 px-2 py-1.5 hover:text-white">
+            <span className="inline-flex h-6 w-6 items-center justify-center rounded bg-white">
+              <Image src="/images/logo_ofac.jpg" alt="OFAC" width={22} height={22} className="object-contain rounded-sm" />
+            </span>
+            <span className="font-semibold">OFAC</span>
+            <span className="text-[#a7aaad] hidden sm:inline">— voir le site</span>
+          </Link>
         </div>
-        <button onClick={() => setOpen(true)} aria-label="Menu" className="p-1.5">
-          <Icon name="menu" size={24} />
-        </button>
+        <div className="flex items-center gap-2">
+          <span className="text-[#c3c4c7] hidden sm:inline">Bonjour, <b className="text-white font-medium">{name}</b></span>
+          <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-[#c1121f] text-white text-[11px] font-bold">{initials}</span>
+          <button onClick={signOut} className="ml-1 text-[#c3c4c7] hover:text-white flex items-center gap-1">
+            <Icon name="logout" size={15} /> <span className="hidden sm:inline">Déconnexion</span>
+          </button>
+        </div>
       </header>
 
-      <div className="flex">
-        {/* Sidebar fixe (desktop) */}
-        <aside className="hidden md:block w-64 shrink-0 h-screen sticky top-0">{Sidebar}</aside>
+      <div className="pt-10 flex">
+        {/* ===== Menu latéral ===== */}
+        <aside
+          className={`fixed md:sticky z-40 top-10 md:self-start h-[calc(100vh-2.5rem)] w-40 shrink-0 bg-[#1d2327] transition-transform ${
+            open ? "translate-x-0" : "-translate-x-full md:translate-x-0"
+          }`}
+        >
+          <nav className="py-1 text-[14px]">
+            {NAV.map((n) => {
+              const active = isActive(n.href);
+              return (
+                <Link
+                  key={n.href}
+                  href={n.href}
+                  onClick={() => setOpen(false)}
+                  className={`flex items-center gap-2.5 px-3 py-2.5 transition ${
+                    active
+                      ? "bg-[#c1121f] text-white font-medium"
+                      : "text-[#c3c4c7] hover:bg-[#2c3338] hover:text-white"
+                  }`}
+                >
+                  <Icon name={n.icon} size={18} className={active ? "text-white" : "text-[#a7aaad]"} />
+                  {n.label}
+                </Link>
+              );
+            })}
+          </nav>
+        </aside>
 
-        {/* Drawer mobile */}
-        {open && (
-          <div className="md:hidden fixed inset-0 z-40 flex">
-            <div className="w-72 max-w-[80%] h-full shadow-2xl relative">
-              <button onClick={() => setOpen(false)} aria-label="Fermer" className="absolute right-3 top-4 z-10 text-zinc-300 hover:text-white">
-                <Icon name="close" size={22} />
-              </button>
-              {Sidebar}
-            </div>
-            <div className="flex-1 bg-black/50" onClick={() => setOpen(false)} />
-          </div>
-        )}
+        {/* overlay mobile */}
+        {open && <div className="md:hidden fixed inset-0 top-10 z-30 bg-black/40" onClick={() => setOpen(false)} />}
 
-        {/* Contenu */}
-        <main className="flex-1 min-w-0">
-          {/* Barre de marque supérieure (desktop) */}
-          <div className="hidden md:block h-1" style={{ background: `linear-gradient(90deg, ${RED}, #f7b500 60%, #0d0d0d)` }} />
-          <div className="p-5 md:p-8 max-w-6xl">{children}</div>
-        </main>
+        {/* ===== Contenu ===== */}
+        <main className="flex-1 min-w-0 p-4 md:p-6">{children}</main>
       </div>
     </div>
   );
