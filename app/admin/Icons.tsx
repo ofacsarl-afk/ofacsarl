@@ -101,6 +101,12 @@ const PATHS: Record<string, React.ReactNode> = {
       <path d="m21 21-4.3-4.3" />
     </>
   ),
+  award: (
+    <>
+      <circle cx="12" cy="8" r="6" />
+      <path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11" />
+    </>
+  ),
 };
 
 export type IconName = keyof typeof PATHS;

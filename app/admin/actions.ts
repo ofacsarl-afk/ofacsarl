@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { getServerSupabase } from "@/lib/supabase/server";
-import type { ImpactStat, SectionImages } from "@/lib/types";
+import type { ImpactStat, Recognition, SectionImages } from "@/lib/types";
 
 async function db() {
   const sb = await getServerSupabase();
@@ -136,4 +136,11 @@ export async function saveSectionImages(images: SectionImages) {
   await sb.from("site_settings").upsert({ key: "section_images", value: images, updated_at: new Date().toISOString() });
   revalidatePath("/");
   revalidatePath("/admin/settings");
+}
+
+export async function saveRecognitions(items: Recognition[]) {
+  const sb = await db();
+  await sb.from("site_settings").upsert({ key: "recognitions", value: items, updated_at: new Date().toISOString() });
+  revalidatePath("/");
+  revalidatePath("/admin/recognitions");
 }

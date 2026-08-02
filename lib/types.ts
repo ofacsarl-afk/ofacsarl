@@ -52,3 +52,12 @@ export type ImpactStat = {
 };
 
 export type SectionImages = Record<string, string>;
+
+export type Recognition = {
+  icon: string; // classe FontAwesome, ex. "fa-award"
+  year: string;
+  title_fr: string;
+  title_en: string;
+  desc_fr: string;
+  desc_en: string;
+};

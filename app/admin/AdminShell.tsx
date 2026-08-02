@@ -13,6 +13,7 @@ const NAV: { href: string; label: string; icon: IconName }[] = [
   { href: "/admin/posts", label: "Actualités", icon: "news" },
   { href: "/admin/gallery", label: "Galerie", icon: "image" },
   { href: "/admin/partners", label: "Partenaires", icon: "users" },
+  { href: "/admin/recognitions", label: "Reconnaissances", icon: "award" },
   { href: "/admin/settings", label: "Images & chiffres", icon: "settings" },
 ];
 

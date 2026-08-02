@@ -7,16 +7,18 @@ import {
   getImpactStats,
   getPartners,
   getPublishedPosts,
+  getRecognitions,
   getSectionImages,
 } from "@/lib/content";
 
 export default async function Home() {
-  const [impact, images, gallery, partners, posts] = await Promise.all([
+  const [impact, images, gallery, partners, posts, recognitions] = await Promise.all([
     getImpactStats(),
     getSectionImages(),
     getGallery(),
     getPartners(),
     getPublishedPosts(),
+    getRecognitions(),
   ]);
 
   return (
@@ -361,20 +363,13 @@ export default async function Home() {
             <h2 className="section-title" data-en>Recognitions &amp;<br /><span style={{ color: "var(--red)" }}>Certifications</span></h2>
           </div>
           <div className="recog-grid">
-            {[
-              { icon: "fa-award", year: "2023", tFr: "Enregistrement Officiel", tEn: "Official Registration", dFr: "ONCE FOR ALL COMPANY SARL — société légalement enregistrée en RDC", dEn: "ONCE FOR ALL COMPANY SARL — legally registered company in the DRC" },
-              { icon: "fa-leaf", year: "À venir", tFr: "Certification Environnementale", tEn: "Environmental Certification", dFr: "Certification en cours d'obtention", dEn: "Certification in progress" },
-              { icon: "fa-handshake", year: "2024", tFr: "Reconnaissance Partenaire", tEn: "Partner Recognition", dFr: "Reconnaissance par nos partenaires institutionnels", dEn: "Recognized by our institutional partners" },
-              { icon: "fa-trophy", year: "2024", tFr: "Prix Impact Social", tEn: "Social Impact Award", dFr: "Catégorie entrepreneuriat durable", dEn: "Sustainable entrepreneurship category" },
-              { icon: "fa-certificate", year: "À venir", tFr: "Certification Qualité", tEn: "Quality Certification", dFr: "Produits & processus", dEn: "Products & processes" },
-              { icon: "fa-globe-africa", year: "À venir", tFr: "Label Vert Africain", tEn: "African Green Label", dFr: "Initiative régionale", dEn: "Regional initiative" },
-            ].map((r, i) => (
+            {recognitions.map((r, i) => (
               <div className="recog-card reveal" key={i} style={{ transitionDelay: `${i * 0.1}s` }}>
                 <div className="recog-badge"><i className={`fa-solid ${r.icon}`} /></div>
                 <div className="recog-body">
                   <div className="recog-year">{r.year}</div>
-                  <h4 className="recog-title" data-fr>{r.tFr}</h4><h4 className="recog-title" data-en>{r.tEn}</h4>
-                  <p className="recog-desc" data-fr>{r.dFr}</p><p className="recog-desc" data-en>{r.dEn}</p>
+                  <h4 className="recog-title" data-fr>{r.title_fr}</h4><h4 className="recog-title" data-en>{r.title_en || r.title_fr}</h4>
+                  <p className="recog-desc" data-fr>{r.desc_fr}</p><p className="recog-desc" data-en>{r.desc_en || r.desc_fr}</p>
                 </div>
               </div>
             ))}

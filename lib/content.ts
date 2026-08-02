@@ -4,6 +4,7 @@ import type {
   ImpactStat,
   Partner,
   Post,
+  Recognition,
   SectionImages,
 } from "@/lib/types";
 
@@ -50,9 +51,26 @@ export const DEFAULT_PARTNERS: Pick<Partner, "name" | "logo_url" | "url">[] = [
   { name: "Club ESE", logo_url: "/images/club-ses.jpg", url: null },
 ];
 
+export const DEFAULT_RECOGNITIONS: Recognition[] = [
+  { icon: "fa-award", year: "2023", title_fr: "Enregistrement Officiel", title_en: "Official Registration", desc_fr: "ONCE FOR ALL COMPANY SARL — société légalement enregistrée en RDC", desc_en: "ONCE FOR ALL COMPANY SARL — legally registered company in the DRC" },
+  { icon: "fa-leaf", year: "À venir", title_fr: "Certification Environnementale", title_en: "Environmental Certification", desc_fr: "Certification en cours d'obtention", desc_en: "Certification in progress" },
+  { icon: "fa-handshake", year: "2024", title_fr: "Reconnaissance Partenaire", title_en: "Partner Recognition", desc_fr: "Reconnaissance par nos partenaires institutionnels", desc_en: "Recognized by our institutional partners" },
+  { icon: "fa-trophy", year: "2024", title_fr: "Prix Impact Social", title_en: "Social Impact Award", desc_fr: "Catégorie entrepreneuriat durable", desc_en: "Sustainable entrepreneurship category" },
+  { icon: "fa-certificate", year: "À venir", title_fr: "Certification Qualité", title_en: "Quality Certification", desc_fr: "Produits & processus", desc_en: "Products & processes" },
+  { icon: "fa-globe-africa", year: "À venir", title_fr: "Label Vert Africain", title_en: "African Green Label", desc_fr: "Initiative régionale", desc_en: "Regional initiative" },
+];
+
 /* ---------------------------------------------------------------
    Fetchers — Supabase si disponible, sinon valeurs par défaut.
 ---------------------------------------------------------------- */
+
+export async function getRecognitions(): Promise<Recognition[]> {
+  const sb = await getServerSupabase();
+  if (!sb) return DEFAULT_RECOGNITIONS;
+  const { data } = await sb.from("site_settings").select("value").eq("key", "recognitions").single();
+  const arr = data?.value as Recognition[] | undefined;
+  return Array.isArray(arr) && arr.length ? arr : DEFAULT_RECOGNITIONS;
+}
 
 export async function getImpactStats(): Promise<ImpactStat[]> {
   const sb = await getServerSupabase();
