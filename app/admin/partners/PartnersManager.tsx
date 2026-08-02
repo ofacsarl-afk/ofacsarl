@@ -33,7 +33,7 @@ export default function PartnersManager({ partners }: { partners: Partner[] }) {
             <input value={url} onChange={(e) => setUrl(e.target.value)} placeholder="Site web (optionnel)"
               className="w-full px-3 py-2 rounded-lg border border-zinc-300" />
             <button onClick={add} disabled={!name || pending}
-              className="px-4 py-2 rounded-lg bg-zinc-900 text-white hover:bg-zinc-800 disabled:opacity-60">
+              className="px-4 py-2 rounded-lg bg-[#c1121f] text-white hover:bg-[#9a0e18] disabled:opacity-60">
               {pending ? "Ajout..." : "Ajouter"}
             </button>
           </div>

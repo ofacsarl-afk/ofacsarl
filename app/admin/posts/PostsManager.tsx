@@ -86,7 +86,7 @@ export default function PostsManager({ posts }: { posts: Post[] }) {
           </div>
         </div>
       ) : (
-        <button onClick={() => setDraft(EMPTY)} className="mb-6 px-4 py-2 rounded-lg bg-zinc-900 text-white hover:bg-zinc-800">
+        <button onClick={() => setDraft(EMPTY)} className="mb-6 px-4 py-2 rounded-lg bg-[#c1121f] text-white hover:bg-[#9a0e18]">
           + Nouvel article
         </button>
       )}

@@ -60,7 +60,7 @@ export default function SettingsManager({ impact, images }: { impact: ImpactStat
           ))}
         </div>
         <button onClick={saveStats} disabled={pending}
-          className="mt-4 px-4 py-2 rounded-lg bg-zinc-900 text-white hover:bg-zinc-800 disabled:opacity-60">
+          className="mt-4 px-4 py-2 rounded-lg bg-[#c1121f] text-white hover:bg-[#9a0e18] disabled:opacity-60">
           {pending ? "..." : "Enregistrer les chiffres"}
         </button>
       </section>

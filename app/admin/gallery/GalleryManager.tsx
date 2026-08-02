@@ -34,7 +34,7 @@ export default function GalleryManager({ items }: { items: GalleryItem[] }) {
             <input value={capEn} onChange={(e) => setCapEn(e.target.value)} placeholder="Caption (English)"
               className="w-full px-3 py-2 rounded-lg border border-zinc-300" />
             <button onClick={add} disabled={!url || pending}
-              className="px-4 py-2 rounded-lg bg-zinc-900 text-white hover:bg-zinc-800 disabled:opacity-60">
+              className="px-4 py-2 rounded-lg bg-[#c1121f] text-white hover:bg-[#9a0e18] disabled:opacity-60">
               {pending ? "Ajout..." : "Ajouter à la galerie"}
             </button>
           </div>

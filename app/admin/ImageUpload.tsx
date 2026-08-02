@@ -3,7 +3,7 @@
 import { useState } from "react";
 
 /**
- * Upload d'une image vers le bucket "media" de Supabase Storage.
+ * Upload d'une image via la route serveur /api/upload (bucket "media").
  * Renvoie l'URL publique via onUploaded.
  */
 export default function ImageUpload({
@@ -52,7 +52,7 @@ export default function ImageUpload({
             vide
           </div>
         )}
-        <label className="cursor-pointer text-sm px-3 py-2 rounded-lg bg-zinc-900 text-white hover:bg-zinc-800 transition">
+        <label className="cursor-pointer text-sm px-3 py-2 rounded-lg bg-[#c1121f] text-white hover:bg-[#9a0e18] transition">
           {busy ? "Envoi..." : "Choisir un fichier"}
           <input type="file" accept="image/*" className="hidden" onChange={onFile} disabled={busy} />
         </label>
