@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { getServerSupabase } from "@/lib/supabase/server";
 import type { ImpactStat, Recognition, SectionImages } from "@/lib/types";
+import { DEFAULT_GALLERY } from "@/lib/content";
 
 async function db() {
   const sb = await getServerSupabase();
@@ -99,11 +100,50 @@ export async function addGalleryItem(input: { image_url: string; caption_fr?: st
   revalidatePath("/admin/gallery");
 }
 
+export async function updateGalleryItem(id: string, input: { caption_fr?: string; caption_en?: string }) {
+  const sb = await db();
+  await sb.from("gallery_items").update({ caption_fr: input.caption_fr || null, caption_en: input.caption_en || null }).eq("id", id);
+  revalidatePath("/");
+  revalidatePath("/admin/gallery");
+}
+
+export async function moveGalleryItem(id: string, dir: -1 | 1) {
+  const sb = await db();
+  const { data } = await sb.from("gallery_items").select("id,sort_order").order("sort_order", { ascending: true });
+  const items = data || [];
+  const i = items.findIndex((x) => x.id === id);
+  const j = i + dir;
+  if (i < 0 || j < 0 || j >= items.length) return;
+  const a = items[i];
+  const b = items[j];
+  await sb.from("gallery_items").update({ sort_order: b.sort_order }).eq("id", a.id);
+  await sb.from("gallery_items").update({ sort_order: a.sort_order }).eq("id", b.id);
+  revalidatePath("/");
+  revalidatePath("/admin/gallery");
+}
+
 export async function deleteGalleryItem(id: string) {
   const sb = await db();
   await sb.from("gallery_items").delete().eq("id", id);
   revalidatePath("/");
   revalidatePath("/admin/gallery");
+}
+
+/** Importe les photos par défaut du site dans la base pour les rendre gérables (une seule fois). */
+export async function seedDefaultGallery() {
+  const sb = await db();
+  const { count } = await sb.from("gallery_items").select("*", { count: "exact", head: true });
+  if ((count || 0) > 0) return { imported: 0 };
+  const rows = DEFAULT_GALLERY.map((g, idx) => ({
+    image_url: g.image_url,
+    caption_fr: g.caption_fr,
+    caption_en: g.caption_en,
+    sort_order: idx,
+  }));
+  await sb.from("gallery_items").insert(rows);
+  revalidatePath("/");
+  revalidatePath("/admin/gallery");
+  return { imported: rows.length };
 }
 
 /* ------------------------- PARTNERS ------------------------- */
