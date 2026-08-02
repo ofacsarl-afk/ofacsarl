@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
-import "./ofac.css";
+// NB : ofac.css (styles du site vitrine) n'est PAS importé ici globalement —
+// il stylise le <nav> et d'autres éléments et fuiterait dans /admin.
+// Il est importé uniquement dans les pages publiques (voir app/page.tsx).
 
 const SITE_URL = "https://www.ofac-rdc.com";
 

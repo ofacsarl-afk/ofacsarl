@@ -1,3 +1,4 @@
+import "./ofac.css";
 import SiteEffects from "@/app/components/SiteEffects";
 import SiteNav from "@/app/components/SiteNav";
 import ContactForm from "@/app/components/ContactForm";
