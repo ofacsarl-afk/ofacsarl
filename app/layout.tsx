@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 // il stylise le <nav> et d'autres éléments et fuiterait dans /admin.
 // Il est importé uniquement dans les pages publiques (voir app/page.tsx).
 
-const SITE_URL = "https://www.ofac-rdc.com";
+const SITE_URL = "https://ofacsarl.com";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
